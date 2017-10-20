@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 public class PreferencesHelper {
 
-    private static final String PREF_FILE_NAME = "flags_of_peace_prefs";
+    private static final String PREF_FILE_NAME = "airports_prefs";
 
     public static final String API_URL = "api_url";
 
