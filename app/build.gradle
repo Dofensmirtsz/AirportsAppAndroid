@@ -53,7 +53,7 @@ dependencies {
 
     compile 'com.jakewharton.timber:timber:4.5.0'
 
-    compile 'io.requery:sqlite-android:3.20.0'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.4.0'
 
