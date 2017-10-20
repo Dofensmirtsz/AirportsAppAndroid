@@ -1,4 +1,4 @@
-package com.avans.airportapp;
+package com.avans.airportapp.ui.other;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -1,7 +1,9 @@
-package com.avans.airportapp;
+package com.avans.airportapp.ui.main;
 
 import android.app.Activity;
 import android.os.Bundle;
+
+import com.avans.airportapp.R;
 
 public class MainActivity extends Activity {
 
