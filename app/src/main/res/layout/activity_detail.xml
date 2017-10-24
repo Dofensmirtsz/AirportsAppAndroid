@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment	xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/the_map"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.google.android.gms.maps.MapFragment"
-    map:cameraTilt="45"
-    map:cameraZoom="14"
-    />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.avans.airportapp.ui.detail.DetailActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical">
+
+
+
+        <ImageView
+            android:id="@+id/image_iso_flag"
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
+
+        <fragment	xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/the_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.MapFragment"
+            map:cameraTilt="45"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

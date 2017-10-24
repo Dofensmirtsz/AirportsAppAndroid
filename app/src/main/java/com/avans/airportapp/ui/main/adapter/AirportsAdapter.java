@@ -36,6 +36,7 @@ public class AirportsAdapter extends RecyclerView.Adapter<AirportsAdapter.ViewHo
         holder.icao.setText(data.getString(data.getColumnIndex(AirportDBHelper.ICAO)));
 
         holder.itemView.setOnClickListener(view -> {
+            data.moveToPosition(position);
             holder.itemView.getContext().startActivity(
                     DetailActivity.getStartIntent(holder.itemView.getContext(),
                             data.getString(data.getColumnIndex(AirportDBHelper.ICAO))));
