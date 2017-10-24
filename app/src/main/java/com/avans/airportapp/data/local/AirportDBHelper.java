@@ -34,10 +34,9 @@ public class AirportDBHelper extends SQLiteAssetHelper {
 
     public Cursor getAirports() {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(SQL_TABLE);
 
         String[] sqlSelect = {ICAO, NAME, ISO_COUNTRY};
-
-        qb.setTables(SQL_TABLE);
         Cursor c = qb.query(database, sqlSelect, null, null, null, null, ISO_COUNTRY);
         c.moveToFirst();
         return c;
@@ -45,6 +44,8 @@ public class AirportDBHelper extends SQLiteAssetHelper {
 
     public Airport getAirport(String icao) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(SQL_TABLE);
+
         Cursor c = qb.query(database,
                 new String[]{ICAO, NAME, LONGITUDE, LATITUDE, ELEVATION, ISO_COUNTRY, MUNICIPALITY},
                 ICAO + " = " + icao,
