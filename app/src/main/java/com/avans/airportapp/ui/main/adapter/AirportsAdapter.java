@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.avans.airportapp.R;
+import com.avans.airportapp.data.local.AirportDBHelper;
+import com.avans.airportapp.ui.detail.DetailActivity;
 
 public class AirportsAdapter extends RecyclerView.Adapter<AirportsAdapter.ViewHolder> {
 
@@ -30,7 +32,14 @@ public class AirportsAdapter extends RecyclerView.Adapter<AirportsAdapter.ViewHo
     public void onBindViewHolder(final ViewHolder holder, int position) {
         data.moveToPosition(position);
 
-        holder.name.setText(data.getString(data.getColumnIndex("name")));
+        holder.name.setText(data.getString(data.getColumnIndex(AirportDBHelper.NAME)));
+        holder.icao.setText(data.getString(data.getColumnIndex(AirportDBHelper.ICAO)));
+
+        holder.itemView.setOnClickListener(view -> {
+            holder.itemView.getContext().startActivity(
+                    DetailActivity.getStartIntent(holder.itemView.getContext(),
+                            data.getString(data.getColumnIndex(AirportDBHelper.ICAO))));
+        });
     }
 
     @Override
@@ -41,10 +50,12 @@ public class AirportsAdapter extends RecyclerView.Adapter<AirportsAdapter.ViewHo
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
+        TextView icao;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.airport_name);
+            icao = (TextView) itemView.findViewById(R.id.airport_icao);
         }
     }
 }

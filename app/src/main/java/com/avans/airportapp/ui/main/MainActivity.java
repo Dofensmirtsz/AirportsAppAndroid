@@ -8,12 +8,11 @@ import android.support.v7.widget.RecyclerView;
 
 import com.avans.airportapp.R;
 import com.avans.airportapp.data.DataManager;
-import com.avans.airportapp.data.model.Airport;
+import com.avans.airportapp.data.local.AirportDBHelper;
 import com.avans.airportapp.ui.main.adapter.AirportsAdapter;
 import com.avans.airportapp.ui.other.SimpleSectionedRecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends Activity implements MainView {
@@ -35,30 +34,16 @@ public class MainActivity extends Activity implements MainView {
 
     @Override
     public void showAirports(Cursor data) {
-        Airport[] airports = new Airport[data.getCount()];
-        for (int i = 0; i < data.getCount() ; i++) {
-            airports[i] = new Airport(
-                    data.getString(data.getColumnIndex("icao")),
-                    data.getString(data.getColumnIndex("name")),
-                    data.getString(data.getColumnIndex("longitude")),
-                    data.getString(data.getColumnIndex("latitude")),
-                    data.getString(data.getColumnIndex("elevation")),
-                    data.getString(data.getColumnIndex("iso_country")),
-                    data.getString(data.getColumnIndex("municipality"))
-                    );
-            data.moveToNext();
-        }
-
-        Arrays.sort(airports, (a1, a2) -> a1.getIsoCountry().compareTo(a2.getIsoCountry()));
-
         List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>();
 
-        for (int i = 0; i < airports.length ; i++) {
-            Airport airport1 = airports[i];
-            Airport airport2 = ((i + 1) < airports.length) ? airports[i + 1] : airports[i];
+        for (int i = 0; i < data.getCount(); i++) {
+            data.moveToPosition(i);
+            String isoCountry1 = data.getString(data.getColumnIndex(AirportDBHelper.ISO_COUNTRY));
+            data.moveToPosition((i + 1) < data.getCount() ? i + 1 : i);
+            String isoCountry2 = data.getString(data.getColumnIndex(AirportDBHelper.ISO_COUNTRY));
 
-            if(!airport1.getIsoCountry().equals(airport2.getIsoCountry())) {
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, airport1.getIsoCountry()));
+            if(!isoCountry1.equals(isoCountry2)) {
+                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, isoCountry1));
             }
         }
         AirportsAdapter baseAdapter = new AirportsAdapter(data);
