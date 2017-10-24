@@ -10,11 +10,15 @@ import com.avans.airportapp.data.DataManager;
 import com.avans.airportapp.data.local.AirportDBHelper;
 import com.avans.airportapp.data.model.Airport;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+
 import timber.log.Timber;
 
 public class DetailActivity extends AppCompatActivity implements DetailView {
 
     private DetailPresenter presenter;
+    private GoogleMap map;
 
     public static Intent getStartIntent(Context context, String icao) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -26,6 +30,9 @@ public class DetailActivity extends AppCompatActivity implements DetailView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+//        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.the_map))
+//                .getMap();
 
         presenter = new DetailPresenter(DataManager.instance(this), this);
         presenter.loadAirport(
