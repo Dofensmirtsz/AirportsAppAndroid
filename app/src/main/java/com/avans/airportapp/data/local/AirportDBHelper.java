@@ -48,12 +48,13 @@ public class AirportDBHelper extends SQLiteAssetHelper {
 
         Cursor c = qb.query(database,
                 new String[]{ICAO, NAME, LONGITUDE, LATITUDE, ELEVATION, ISO_COUNTRY, MUNICIPALITY},
-                ICAO + " = " + icao,
+                ICAO + "='" + icao + "'",
                 null,
                 null,
                 null,
-                null,
-                "1");
+                null);
+
+        c.moveToFirst();
 
         return new Airport(
                 c.getString(c.getColumnIndex(ICAO)),
