@@ -48,4 +48,17 @@ public class Airport {
     public String getMunicipality() {
         return municipality;
     }
+
+    @Override
+    public String toString() {
+        return "Airport{" +
+                "icao='" + icao + '\'' +
+                ", name='" + name + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", elevation='" + elevation + '\'' +
+                ", isoCountry='" + isoCountry + '\'' +
+                ", municipality='" + municipality + '\'' +
+                '}';
+    }
 }
