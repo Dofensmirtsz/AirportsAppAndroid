@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -27,9 +28,12 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.jwang123.flagkit.FlagKit;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -53,7 +57,10 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
 
     private Toolbar toolbar;
 
+    private Airport selectedAirport;
+
     static final LatLng EHAM = new LatLng(52.3105386,4.7682744);
+    static LatLng SELECTED_AIRPORT;
 
     public static Intent getStartIntent(Context context, String icao) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -113,6 +120,7 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
             imageISO.setBackgroundColor(ContextCompat.getColor(this, R.color.colorSectionBackground));
         }
 
+        selectedAirport = airport;
         getSupportActionBar().setTitle(airport.getIcao());
 
         airportName.setText(airport.getName());
@@ -123,31 +131,40 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
 
         airportMunicipality.setVisibility(airport.getMunicipality().isEmpty() ? View.GONE : View.VISIBLE);
         airportMunicipality.setText(getString(R.string.detail_municipality, airport.getMunicipality()));
+
+        SELECTED_AIRPORT = new LatLng(Double.parseDouble(airport.getLatitude()), Double.parseDouble(airport.getLongitude()));
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        PolygonOptions polygonOptions = new PolygonOptions()
-                .clickable(true)
-                .add(new LatLng(51.586662, 4.791969),
-                        new LatLng( 51.584434, 4.793528),
-                        new LatLng( 51.587474, 4.795993),
-                        new LatLng(51.586662, 4.791969));
+
+
+        googleMap.addMarker(new MarkerOptions().position(EHAM).title("EHAM").snippet("Schiphol"));
+        googleMap.addMarker(new MarkerOptions().position(SELECTED_AIRPORT).title(selectedAirport.getIcao()).snippet(selectedAirport.getName()));
+
+        LatLng middle = new LatLng((EHAM.latitude + SELECTED_AIRPORT.latitude) / 2, (EHAM.longitude + SELECTED_AIRPORT.longitude) / 2);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(middle,0));
+
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(calculateBounds(SELECTED_AIRPORT), 200, 200, 20));
+
+        PolygonOptions polygonOptions = new PolygonOptions().clickable(true).add(EHAM, SELECTED_AIRPORT);
 
         // Set polygon dingen
         Polygon polygon = this.googleMap.addPolygon(polygonOptions);
-        polygon.setFillColor(Color.argb(100, 255, 255, 255));
-        polygon.setStrokeColor(Color.RED);
-        polygon.setStrokeWidth(10.0f);
+        polygon.setFillColor(Color.argb(255, 0, 0, 0));
+        //polygon.setStrokeColor(Color.RED);
+        polygon.setStrokeWidth(5.0f);
 
-        googleMap.addMarker(new MarkerOptions().position(EHAM).title("EHAM Marker").snippet("EHAM"));
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(EHAM, 10));
-
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        Polyline polyline = googleMap.addPolyline((new PolylineOptions()
+                .add(EHAM,SELECTED_AIRPORT)
+                .width(5.0f)
+                .color(Color.RED)
+                .geodesic(true)));
     }
 
     @Override
@@ -163,15 +180,39 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapFragment.onDestroy();
-    }
-
-    @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapFragment.onLowMemory();
     }
 
+//    private LatLngBounds calculateBounds(LatLng selectedAirport){
+//        //northeast LAT + LONG +
+//        //southwest LAT - LONG -
+//
+//        LatLng NORTHEAST;
+//        LatLng SOUTHWEST;
+//
+//        if(selectedAirport.latitude > EHAM.latitude){
+//            if(selectedAirport.longitude <= EHAM.longitude){
+//                SOUTHWEST = new LatLng(selectedAirport.latitude,selectedAirport.longitude);
+//                NORTHEAST = new LatLng(EHAM.latitude, EHAM.longitude);
+//            }
+//            else{
+//                SOUTHWEST = new LatLng(selectedAirport.latitude,EHAM.longitude);
+//                NORTHEAST = new LatLng(EHAM.latitude, selectedAirport.longitude);
+//            }
+//        }
+//        else{
+//            if(selectedAirport.longitude > EHAM.longitude){
+//                SOUTHWEST = new LatLng(EHAM.latitude, selectedAirport.longitude);
+//                NORTHEAST = new LatLng(selectedAirport.latitude, EHAM.longitude);
+//            }
+//            else{
+//                SOUTHWEST = new LatLng(EHAM.latitude, EHAM.longitude);
+//                NORTHEAST = new LatLng(selectedAirport.latitude, selectedAirport.longitude);
+//            }
+//        }
+//
+//        return new LatLngBounds(NORTHEAST,SOUTHWEST);
+//    }
 }
