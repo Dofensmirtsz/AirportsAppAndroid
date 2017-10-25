@@ -1,14 +1,10 @@
 package com.avans.airportapp.ui.detail;
 
-import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -17,9 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Property;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -182,30 +176,36 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
                 .geodesic(true)));
 
         Marker marker = googleMap.addMarker(new MarkerOptions().position(EHAM).title("AIRPLANE").icon(BitmapDescriptorFactory.fromResource(R.drawable.vliegtuig)));
-        animateMarker(marker, SELECTED_AIRPORT, polyline.getPoints());
+        animateMarker(marker, SELECTED_AIRPORT, polyline.getPoints(), new LatLngInterpolator.Spherical());
         Log.d("STATE", "KEK123 IN THE CHAT PLEASE");
     }
 
-    static void animateMarker(final Marker marker, final LatLng finalPosition,final List<LatLng> latLngList){
+    static void animateMarker(final Marker marker, final LatLng finalPosition,final List<LatLng> latLngList, final LatLngInterpolator latLngInterpolator){
         final LatLng startPosition = marker.getPosition();
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+        final float durationInMs = 3000;
 
         handler.post(new Runnable() {
             long elapsed;
             int index = 0;
+            float t;
+            float v;
 
             @Override
             public void run(){
                 elapsed = SystemClock.uptimeMillis() - start;
+                t = elapsed / durationInMs;
+                v = interpolator.getInterpolation(t);
 
-                marker.setPosition(latLngList.get(index));
+                //marker.setPosition(latLngList.get(index));
+                marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
 
                 index++;
                 index%=latLngList.size();
 
-                handler.postDelayed(this, 300);
+                handler.postDelayed(this, 16);
             }
         });
     }
