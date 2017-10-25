@@ -1,19 +1,30 @@
 package com.avans.airportapp.ui.detail;
 
+import android.animation.ObjectAnimator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Property;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,8 +38,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -37,6 +50,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.jwang123.flagkit.FlagKit;
 
 import com.google.android.gms.maps.GoogleMap;
+
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -165,6 +180,34 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
                 .width(5.0f)
                 .color(Color.RED)
                 .geodesic(true)));
+
+        Marker marker = googleMap.addMarker(new MarkerOptions().position(EHAM).title("AIRPLANE").icon(BitmapDescriptorFactory.fromResource(R.drawable.vliegtuig)));
+        animateMarker(marker, SELECTED_AIRPORT, polyline.getPoints());
+        Log.d("STATE", "KEK123 IN THE CHAT PLEASE");
+    }
+
+    static void animateMarker(final Marker marker, final LatLng finalPosition,final List<LatLng> latLngList){
+        final LatLng startPosition = marker.getPosition();
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+
+        handler.post(new Runnable() {
+            long elapsed;
+            int index = 0;
+
+            @Override
+            public void run(){
+                elapsed = SystemClock.uptimeMillis() - start;
+
+                marker.setPosition(latLngList.get(index));
+
+                index++;
+                index%=latLngList.size();
+
+                handler.postDelayed(this, 300);
+            }
+        });
     }
 
     @Override
@@ -184,35 +227,4 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
         super.onLowMemory();
         mapFragment.onLowMemory();
     }
-
-//    private LatLngBounds calculateBounds(LatLng selectedAirport){
-//        //northeast LAT + LONG +
-//        //southwest LAT - LONG -
-//
-//        LatLng NORTHEAST;
-//        LatLng SOUTHWEST;
-//
-//        if(selectedAirport.latitude > EHAM.latitude){
-//            if(selectedAirport.longitude <= EHAM.longitude){
-//                SOUTHWEST = new LatLng(selectedAirport.latitude,selectedAirport.longitude);
-//                NORTHEAST = new LatLng(EHAM.latitude, EHAM.longitude);
-//            }
-//            else{
-//                SOUTHWEST = new LatLng(selectedAirport.latitude,EHAM.longitude);
-//                NORTHEAST = new LatLng(EHAM.latitude, selectedAirport.longitude);
-//            }
-//        }
-//        else{
-//            if(selectedAirport.longitude > EHAM.longitude){
-//                SOUTHWEST = new LatLng(EHAM.latitude, selectedAirport.longitude);
-//                NORTHEAST = new LatLng(selectedAirport.latitude, EHAM.longitude);
-//            }
-//            else{
-//                SOUTHWEST = new LatLng(EHAM.latitude, EHAM.longitude);
-//                NORTHEAST = new LatLng(selectedAirport.latitude, selectedAirport.longitude);
-//            }
-//        }
-//
-//        return new LatLngBounds(NORTHEAST,SOUTHWEST);
-//    }
 }
