@@ -1,10 +1,14 @@
 package com.avans.airportapp.ui.main;
 
-import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.avans.airportapp.R;
 import com.avans.airportapp.data.DataManager;
@@ -15,10 +19,11 @@ import com.avans.airportapp.ui.other.SimpleSectionedRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements MainView {
+public class MainActivity extends AppCompatActivity implements MainView, SearchView.OnQueryTextListener {
 
     private MainPresenter presenter;
     private RecyclerView recyclerView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +33,27 @@ public class MainActivity extends Activity implements MainView {
         recyclerView = (RecyclerView) findViewById(R.id.airports_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Airports");
+
         presenter = new MainPresenter(DataManager.instance(this), this);
         presenter.loadAirports();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu);
+
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView =
+                new SearchView(getSupportActionBar().getThemedContext());
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item.setActionView(searchView);
+        searchView.setOnQueryTextListener(this);
+        return true;
     }
 
     @Override
@@ -53,5 +77,20 @@ public class MainActivity extends Activity implements MainView {
         sectionAdapter.setSections(sections.toArray(dummy));
 
         recyclerView.setAdapter(sectionAdapter);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        if (query.isEmpty()) {
+            presenter.loadAirports();
+        } else {
+            presenter.searchAirports(query);
+        }
+        return false;
     }
 }

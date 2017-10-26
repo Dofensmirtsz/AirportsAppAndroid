@@ -67,4 +67,21 @@ public class AirportDBHelper extends SQLiteAssetHelper {
         );
     }
 
+    public Cursor search(String query) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(SQL_TABLE);
+
+        Cursor c = qb.query(database,
+                new String[]{ICAO, NAME, LONGITUDE, LATITUDE, ELEVATION, ISO_COUNTRY, MUNICIPALITY},
+                "name LIKE '%" + query +"%' " +
+                    "OR municipality LIKE '%" + query + "%' " +
+                    "OR icao LIKE '%" + query + "%'",
+                null,
+                null,
+                null,
+                ISO_COUNTRY);
+
+        c.moveToFirst();
+        return c;
+    }
 }

@@ -17,4 +17,7 @@ public class MainPresenter {
         view.showAirports(dataManager.getDBHelper().getAirports());
     }
 
+    public void searchAirports(String query) {
+        view.showAirports(dataManager.getDBHelper().search(query));
+    }
 }

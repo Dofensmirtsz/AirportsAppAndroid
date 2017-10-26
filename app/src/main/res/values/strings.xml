@@ -3,4 +3,5 @@
     <string name="detail_coords" formatted="false">Lon: %1$s, Lat: %2$s</string>
     <string name="detail_elevation" formatted="false">Elevation: %s</string>
     <string name="detail_municipality" formatted="false">Municipality: %s</string>
+    <string name="action_search">search</string>
 </resources>
