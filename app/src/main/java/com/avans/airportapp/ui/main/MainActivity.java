@@ -81,15 +81,14 @@ public class MainActivity extends AppCompatActivity implements MainView, SearchV
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        presenter.searchAirports(query);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        if (query.isEmpty()) {
+        if(query.isEmpty()) {
             presenter.loadAirports();
-        } else {
-            presenter.searchAirports(query);
         }
         return false;
     }
