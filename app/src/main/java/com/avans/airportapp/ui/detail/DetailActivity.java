@@ -147,10 +147,9 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
             selectedLatLng = new LatLng(Double.parseDouble(airport.getLatitude()), Double.parseDouble(airport.getLongitude()));
         } catch (NumberFormatException e) {
             Timber.e(e);
-        } finally {
             onBackPressed();
             Toast.makeText(getApplicationContext(), "INVALID LAT/LON VALUE", Toast.LENGTH_SHORT).show();
-        }
+        } 
     }
 
     @Override
