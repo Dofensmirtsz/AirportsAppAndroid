@@ -22,12 +22,14 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avans.airportapp.R;
 import com.avans.airportapp.data.DataManager;
 import com.avans.airportapp.data.local.AirportDBHelper;
 import com.avans.airportapp.data.model.Airport;
 
+import com.avans.airportapp.util.AirportMapUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -69,7 +71,7 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
     private Airport selectedAirport;
 
     static final LatLng EHAM = new LatLng(52.3105386,4.7682744);
-    static LatLng SELECTED_AIRPORT;
+    private LatLng selectedLatLng;
 
     public static Intent getStartIntent(Context context, String icao) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -141,8 +143,14 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
         airportMunicipality.setVisibility(airport.getMunicipality().isEmpty() ? View.GONE : View.VISIBLE);
         airportMunicipality.setText(getString(R.string.detail_municipality, airport.getMunicipality()));
 
-        SELECTED_AIRPORT = new LatLng(Double.parseDouble(airport.getLatitude()), Double.parseDouble(airport.getLongitude()));
-
+        try {
+            selectedLatLng = new LatLng(Double.parseDouble(airport.getLatitude()), Double.parseDouble(airport.getLongitude()));
+        } catch (NumberFormatException e) {
+            Timber.e(e);
+        } finally {
+            onBackPressed();
+            Toast.makeText(getApplicationContext(), "INVALID LAT/LON VALUE", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -151,63 +159,29 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
         this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
+        if (selectedLatLng != null) {
+            googleMap.addMarker(new MarkerOptions().position(EHAM).title("EHAM").snippet("Schiphol"));
+            googleMap.addMarker(new MarkerOptions().position(selectedLatLng).title(selectedAirport.getIcao()).snippet(selectedAirport.getName()));
 
+            LatLng middle = new LatLng((EHAM.latitude + selectedLatLng.latitude) / 2, (EHAM.longitude + selectedLatLng.longitude) / 2);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(middle,0));
 
-        googleMap.addMarker(new MarkerOptions().position(EHAM).title("EHAM").snippet("Schiphol"));
-        googleMap.addMarker(new MarkerOptions().position(SELECTED_AIRPORT).title(selectedAirport.getIcao()).snippet(selectedAirport.getName()));
+            PolygonOptions polygonOptions = new PolygonOptions().clickable(true).add(EHAM, selectedLatLng);
 
-        LatLng middle = new LatLng((EHAM.latitude + SELECTED_AIRPORT.latitude) / 2, (EHAM.longitude + SELECTED_AIRPORT.longitude) / 2);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(middle,0));
+            Polygon polygon = this.googleMap.addPolygon(polygonOptions);
+            polygon.setFillColor(Color.argb(255, 0, 0, 0));
+            polygon.setStrokeWidth(5.0f);
 
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(calculateBounds(SELECTED_AIRPORT), 200, 200, 20));
+            Polyline polyline = googleMap.addPolyline((new PolylineOptions()
+                    .add(EHAM,selectedLatLng)
+                    .width(5.0f)
+                    .color(Color.RED)
+                    .geodesic(true)));
 
-        PolygonOptions polygonOptions = new PolygonOptions().clickable(true).add(EHAM, SELECTED_AIRPORT);
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(EHAM).title("AIRPLANE").icon(BitmapDescriptorFactory.fromResource(R.drawable.vliegtuig)));
+            AirportMapUtil.animateMarker(marker, selectedLatLng, polyline.getPoints(), new LatLngInterpolator.Spherical());
+        }
 
-        // Set polygon dingen
-        Polygon polygon = this.googleMap.addPolygon(polygonOptions);
-        polygon.setFillColor(Color.argb(255, 0, 0, 0));
-        //polygon.setStrokeColor(Color.RED);
-        polygon.setStrokeWidth(5.0f);
-
-        Polyline polyline = googleMap.addPolyline((new PolylineOptions()
-                .add(EHAM,SELECTED_AIRPORT)
-                .width(5.0f)
-                .color(Color.RED)
-                .geodesic(true)));
-
-        Marker marker = googleMap.addMarker(new MarkerOptions().position(EHAM).title("AIRPLANE").icon(BitmapDescriptorFactory.fromResource(R.drawable.vliegtuig)));
-        animateMarker(marker, SELECTED_AIRPORT, polyline.getPoints(), new LatLngInterpolator.Spherical());
-        Log.d("STATE", "KEK123 IN THE CHAT PLEASE");
-    }
-
-    static void animateMarker(final Marker marker, final LatLng finalPosition,final List<LatLng> latLngList, final LatLngInterpolator latLngInterpolator){
-        final LatLng startPosition = marker.getPosition();
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final float durationInMs = 3000;
-
-        handler.post(new Runnable() {
-            long elapsed;
-            int index = 0;
-            float t;
-            float v;
-
-            @Override
-            public void run(){
-                elapsed = SystemClock.uptimeMillis() - start;
-                t = elapsed / durationInMs;
-                v = interpolator.getInterpolation(t);
-
-                //marker.setPosition(latLngList.get(index));
-                marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
-
-                index++;
-                index%=latLngList.size();
-
-                handler.postDelayed(this, 16);
-            }
-        });
     }
 
     @Override
