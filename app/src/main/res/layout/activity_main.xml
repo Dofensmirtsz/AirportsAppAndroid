@@ -23,6 +23,17 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:scrollbars="vertical"/>
+
+        android:scrollbars="vertical"
+        android:scrollbarSize="18dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbarThumbVertical="@color/colorSectionBackground"
+
+
+        android:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+        app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"/>
 
 </android.support.design.widget.CoordinatorLayout>
