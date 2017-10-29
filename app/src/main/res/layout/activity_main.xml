@@ -18,22 +18,25 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/airports_recyclerview"
-        android:layout_height="match_parent"
+    <FrameLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/airports_recyclerview"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            />
 
-        android:scrollbars="vertical"
-        android:scrollbarSize="18dp"
-        android:scrollbarStyle="insideInset"
-        android:scrollbarThumbVertical="@color/colorSectionBackground"
-
-
-        android:fastScrollEnabled="true"
-        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
-        app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
-        app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
-        app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"/>
+        <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
+            android:id="@+id/airports_recyclerview_fastscroller"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            app:rfs_handleColor="@color/colorThumb"
+            app:rfs_barColor="@android:color/white"
+            />
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

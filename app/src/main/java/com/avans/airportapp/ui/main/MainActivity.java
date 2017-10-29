@@ -19,10 +19,14 @@ import com.avans.airportapp.ui.other.SimpleSectionedRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
+
 public class MainActivity extends AppCompatActivity implements MainView, SearchView.OnQueryTextListener {
 
     private MainPresenter presenter;
     private RecyclerView recyclerView;
+    private VerticalRecyclerViewFastScroller scroller;
+
     private Toolbar toolbar;
 
     @Override
@@ -32,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements MainView, SearchV
 
         recyclerView = (RecyclerView) findViewById(R.id.airports_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        scroller = (VerticalRecyclerViewFastScroller) findViewById(R.id.airports_recyclerview_fastscroller);
+        scroller.setRecyclerView(recyclerView);
+
+        recyclerView.addOnScrollListener(scroller.getOnScrollListener());
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements MainView, SearchV
             String isoCountry2 = data.getString(data.getColumnIndex(AirportDBHelper.ISO_COUNTRY));
 
             if(!isoCountry1.equals(isoCountry2)) {
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, isoCountry1));
+                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, isoCountry2));
             }
         }
         AirportsAdapter baseAdapter = new AirportsAdapter(data);

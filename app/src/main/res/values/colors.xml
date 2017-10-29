@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorSectionBackground">#459E4F</color>
     <color name="colorGray">#dfdfdf</color>
+    <color name="colorThumb">#237C2E</color>
 </resources>
