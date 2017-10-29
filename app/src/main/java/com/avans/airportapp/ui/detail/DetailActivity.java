@@ -149,7 +149,7 @@ public class DetailActivity extends AppCompatActivity implements DetailView, OnM
             Timber.e(e);
             onBackPressed();
             Toast.makeText(getApplicationContext(), "INVALID LAT/LON VALUE", Toast.LENGTH_SHORT).show();
-        } 
+        }
     }
 
     @Override
